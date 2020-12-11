@@ -1,0 +1,44 @@
+node {
+     
+     def buildNumber = BUILD_NUMBER
+    def mvnHome = tool 'myMaven4'
+    
+    stage ("checkout")  {
+    git credentialsId: 'git-authentication-jenkins-login', url: 'https://github.com/Jenkins2025/spring-boot-mongo-docker.git'
+    }
+
+  
+  stage ('build')  {
+    sh "${mvnHome}/bin/mvn clean install "
+    }
+
+    stage('Build Docker Image'){
+        sh "docker build -t agunu2025/springbootmongo:${buildNumber} ."
+    }
+  
+     stage('Push Docker Image'){
+         withCredentials([string(credentialsId: 'dockerAuthenticationpublic', variable: 'dockerAuthenticationpublic')])  {
+          sh "docker login -u agunu2025 -p ${dockerAuthenticationpublic}"
+        }
+        sh "docker push agunu2025/springbootmongo:${buildNumber} "
+     }
+
+     
+    stage('Remove Docker Image'){
+        sh "docker rmi -f agunu2025/springbootmongo:${buildNumber} ."
+       }
+    
+     stage('Build Docker Image'){
+        sh "docker rm -f agunu2025/springbootmongo:${buildNumber} ."
+       }
+
+
+    stage("Deploy Application In KubernetesCluster"){
+        sshagent(['MacProAwsKeyPair']) {
+		    sh 'scp -o StrictHostKeyChecking=no javawebapp-deployment.yml ec2-user@13.58.189.182:'
+		    //sh 'ssh -o StrictHostKeyChecking=no ubuntu@172.31.47.232 docker stack rm springboot'
+              sh 'ssh -o StrictHostKeyChecking=no ec2-user@13.58.189.182 kubectl apply -f javawebapp-deployment.yml'
+        }
+    }
+
+}
