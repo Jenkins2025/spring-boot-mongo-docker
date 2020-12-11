@@ -1,35 +1,87 @@
----
-apiVersion: v1
-kind: ReplicationController
+# Rolling Update
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  labels:
-    name: javawebapp
-  name: java-controller
+  name: javawebappdeployment
 spec:
-  replicas: 1
+  replicas: 4
+  selector:
+    matchLabels:
+      app: javawebapp
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  minReadySeconds: 30
   template:
     metadata:
+      name: javawebapppod
       labels:
-        name: javawebapp
+        app: javawebapp
     spec:
       containers:
-      - image: dockerhandson/java-web-app
-        name: javawebapp
+      - name: javawebappcontainer
+        image: dockerhandson/java-web-app
         ports:
-        - name: javawebapp
-          containerPort: 8080  
----
-# Node Port Service
+        - containerPort: 8080
+        
+        
 apiVersion: v1
 kind: Service
 metadata:
-  labels:
-    name: javawebapp
-  name: javawebapp
+  name: javawebappservice
 spec:
-  type: NodePort
-  ports:
-    - port: 8080
-      targetPort: 8080
+  type: LoadBalancer
   selector:
-    name: javawebapp
+     app: javawebapp
+  ports:
+  - port: 80
+    targetPort: 8080
+
+
+
+
+
+
+
+
+
+
+
+
+# ---
+# apiVersion: v1
+# kind: ReplicationController
+# metadata:
+#   labels:
+#     name: javawebapp
+#   name: java-controller
+# spec:
+#   replicas: 1
+#   template:
+#     metadata:
+#       labels:
+#         name: javawebapp
+#     spec:
+#       containers:
+#       - image: dockerhandson/java-web-app
+#         name: javawebapp
+#         ports:
+#         - name: javawebapp
+#           containerPort: 8080  
+# ---
+# # Node Port Service
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   labels:
+#     name: javawebapp
+#   name: javawebapp
+# spec:
+#   type: NodePort
+#   ports:
+#     - port: 8080
+#       targetPort: 8080
+#   selector:
+#     name: javawebapp
