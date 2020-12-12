@@ -23,7 +23,7 @@ spec:
         app: springboot
     spec:
       containers:
-      - image: agunu2025/springbootmongo:tagVersion
+      - image: agunu2025/springbootmongo:6fb2126d697a8c2096fcb1d6306ace627a7d5e4c
         name: springboot
         ports:
         - containerPort: 8080  
