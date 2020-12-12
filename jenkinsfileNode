@@ -13,7 +13,7 @@ node {
     }
 
     stage('Build Docker Image'){
-        sh "docker build -t agunu2025/springbootmongo:${DOCKER_TAG} . "
+        sh "docker build . -t agunu2025/springbootmongo:${DOCKER_TAG}"
     }
   
      stage('Push Docker Image'){
