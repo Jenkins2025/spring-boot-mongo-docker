@@ -1,7 +1,8 @@
 node {
      
+     DOCKER_TAG = getDockerTag()
      def buildNumber = BUILD_NUMBER
-    def mvnHome = tool 'myMaven4'
+     def mvnHome = tool 'myMaven4'
     
     stage ("checkout")  {
     git credentialsId: 'git-authentication-jenkins-login', url: 'https://github.com/Jenkins2025/spring-boot-mongo-docker.git'
