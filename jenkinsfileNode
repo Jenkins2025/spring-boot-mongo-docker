@@ -1,7 +1,7 @@
 node {
      
      DOCKER_TAG = getDockerTag()
-     def buildNumber = BUILD_NUMBER
+     #def buildNumber = BUILD_NUMBER
      def mvnHome = tool 'myMaven4'
     
     stage ("checkout")  {
@@ -26,11 +26,11 @@ node {
 
      
     stage('Remove Docker Image'){
-        sh "docker rmi -f agunu2025/springbootmongo:${DOCKER_TAG} ."
+        sh "docker rmi -f agunu2025/springbootmongo:${DOCKER_TAG} "
        }
     
      stage('Build Docker Image'){
-        sh "docker rm -f agunu2025/springbootmongo:${DOCKER_TAG} ."
+        sh "docker rm -f agunu2025/springbootmongo:${DOCKER_TAG} "
        }
 
 
