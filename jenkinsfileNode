@@ -37,9 +37,9 @@ node {
         sh "chmod +x changeTag.sh"
         sh "./changeTag.sh ${DOCKER_TAG}"
         sshagent(['MacProAwsKeyPair']) {
-		    sh 'scp -o StrictHostKeyChecking=no ns-and-sa.yml node-app-pod.yml javawebapp-deployment.yml ec2-user@3.21.158.158:'
+		    sh 'scp -o StrictHostKeyChecking=no ns-and-sa.yml node-app-pod.yml javawebapp-deployment.yml ec2-user@3.17.81.207:'
 		    //sh 'ssh -o StrictHostKeyChecking=no ubuntu@172.31.47.232 docker stack rm springboot'
-          sh 'ssh -o StrictHostKeyChecking=no ec2-user@3.21.158.158 kubectl apply -f .'
+          sh 'ssh -o StrictHostKeyChecking=no ec2-user@3.17.81.207 kubectl apply -f .'
         }
     }
 }
