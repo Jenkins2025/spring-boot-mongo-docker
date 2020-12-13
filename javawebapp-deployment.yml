@@ -42,34 +42,41 @@ spec:
   selector:
     app: javawebapp
 
----
+#Rolling Update
 apiVersion: apps/v1
-kind: DaemonSet
-metadata: 
-  name: mavenwebappds
-spec: 
-  selector: 
-    matchLabels: 
+kind: Deployment
+metadata:
+  name: javawebappdeployment
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
       app: mavenwebapp
-  template: 
-    metadata: 
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  minReadySeconds: 30
+  template:
+    metadata:
       name: mavenwebapppod
-      labels: 
-      app: mavenwebapp
-    spec: 
-      containers: 
-      - image: dockerhandson/maven-web-app
-        name: mavenwebappcontainer
-        ports: 
+      labels:
+        app: mavenwebapp
+    spec:
+      containers:
+      - name: mavenwebapppod
+        image: dockerhandson/maven-web-app
+        ports:
         - containerPort: 8080
 
-
-#Node Port Service
+---
+# Node Port Service
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-  app: mavenwebapp
+    app: mavenwebapp
   name: mavenwebapp
 spec:
   type: LoadBalancer
