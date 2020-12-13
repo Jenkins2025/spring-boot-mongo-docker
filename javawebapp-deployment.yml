@@ -41,7 +41,7 @@ spec:
       targetPort: 8080
   selector:
     app: javawebapp
-##########################
+
 ---
 apiVersion: apps/v1
 kind: DaemonSet
@@ -53,22 +53,23 @@ spec:
       app: mavenwebapp
   template: 
     metadata: 
-	  name: mavenwebapppod
+      name: mavenwebapppod
       labels: 
-        app: mavenwebapp
+      app: mavenwebapp
     spec: 
       containers: 
       - image: dockerhandson/maven-web-app
         name: mavenwebappcontainer
         ports: 
         - containerPort: 8080
----
-# Node Port Service
+
+
+#Node Port Service
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: mavenwebapp
+  app: mavenwebapp
   name: mavenwebapp
 spec:
   type: LoadBalancer
