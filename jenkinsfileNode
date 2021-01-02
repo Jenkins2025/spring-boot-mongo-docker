@@ -1,6 +1,5 @@
 node {
      
-     DOCKER_TAG = getDockerTag()
      def mvnHome = tool 'myMaven4'
     
     stage ("checkout")  {
