@@ -32,22 +32,16 @@ node {
         sh "docker rm -f agunu2025/springbootmongo:${DOCKER_TAG} "
        }
 
+  stage("Deploy To Kuberates Cluster"){
+       kubernetesDeploy(
+           configs: 'springBootMongo.yml',
+           kubeconfigId: 'gkek8sagunu2025',
+         enableConfigSubstitution: true
+        )
+     }
 
-    stage("Deploy Application In KubernetesCluster"){
-        sh "chmod +x changeTag.sh"
-        sh "./changeTag.sh ${DOCKER_TAG}"
-        sshagent(['MacProAwsKeyPair']) {
-		    sh 'scp -o StrictHostKeyChecking=no ns-and-sa.yml node-app-pod.yml javawebapp-deployment.yml ec2-user@3.17.81.207:'
-		    //sh 'ssh -o StrictHostKeyChecking=no ubuntu@172.31.47.232 docker stack rm springboot'
-          sh 'ssh -o StrictHostKeyChecking=no ec2-user@3.17.81.207 kubectl apply -f .'
-        }
-    }
 }
-   def getDockerTag(){
-    def tag  = sh script: 'git rev-parse HEAD', returnStdout: true
-    return tag
-}
-
+   
 
 
 
