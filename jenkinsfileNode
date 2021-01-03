@@ -1,4 +1,4 @@
-ode {
+node {
      def buildNumber = BUILD_NUMBER
      def mvnHome = tool 'myMaven4'
     
