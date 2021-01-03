@@ -1,51 +1,39 @@
-pipeline {
-     agent any
-        environment {
-        //once you sign up for Docker hub, use that user_id here
-        registry = "agunu2025/springbootmongo"
-        //- update your credentials ID after creating credentials for connecting to Docker Hub
-        registryCredential = 'dockerAuthenticationpublic'
-        dockerImage = ''
+ode {
+     def buildNumber = BUILD_NUMBER
+     def mvnHome = tool 'myMaven4'
+    
+    stage ("checkout")  {
+    git credentialsId: 'git-authentication-jenkins-login', url: 'https://github.com/Jenkins2025/spring-boot-mongo-docker.git'
     }
-    stages {
 
-        stage ('checkout') {
-            steps {
-            checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/Jenkins2025/spring-boot-mongo-docker']]])
-            }
-        }
-       
-        stage ('Build docker image') {
-            steps {
-                script {
-                dockerImage = docker.build registry
-                }
-            }
-        }
-       
-         // Uploading Docker images into Docker Hub
-    stage('Upload Image') {
-     steps{   
-         script {
-            docker.withRegistry( '', registryCredential ) {
-            dockerImage.push()
-            }
-        }
-      }
+  
+  stage ('build')  {
+    sh "${mvnHome}/bin/mvn clean install "
     }
-   
-    stage ('K8S Deploy') {
-        steps {
-            script {
-                kubernetesDeploy(
-                    configs: 'springBootMongo.yml',
-                    kubeconfigId: 'gkek8sagunu2025',
-                    enableConfigSubstitution: true
-                    )           
-               
-            }
-        }
+
+    stage('Build Docker Image'){
+        sh "docker build . -t agunu2025/springbootmongo:${buildNumber}"
     }
   
-    }  
+     stage('Push Docker Image'){
+         withCredentials([string(credentialsId: 'dockerAuthenticationpublic', variable: 'dockerAuthenticationpublic')])  {
+          sh "docker login -u agunu2025 -p ${dockerAuthenticationpublic}"
+        }
+        sh "docker push agunu2025/springbootmongo:${buildNumber} "
+     }
+
+     
+    stage('Remove Docker Image'){
+        sh "docker rmi -f agunu2025/springbootmongo:${buildNumber} "
+       }
+    
+     stage('Build Docker Image'){
+        sh "docker rm -f agunu2025/springbootmongo:${buildNumber} "
+       }
+
+  stage("Deploy To Kuberates Cluster"){
+      withKubeConfig(credentialsId: 'kubernetesconfig444') {
+      sh 'kubectl apply -f springBootMongo.yml' 
+      }
+
 }
